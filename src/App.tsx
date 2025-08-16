@@ -1,58 +1,54 @@
-import { useEffect, useRef } from "react";
-import LedgerLiveApi, { WindowMessageTransport } from "@ledgerhq/live-app-sdk";
-import logo from "./logo.svg";
-import "./App.css";
+import React, { useState } from 'react';
+import Home from './Home';
+import PlatformPage from './PlatformPage';
 
-const App = () => {
-  // Define the Ledger Live API variable used to call api methods
-  const api = useRef<LedgerLiveApi>();
+// Dummy GraphQL query function to simulate platform selection
+async function fetchBestPlatform(): Promise<'morpho' | 'aave'> {
+  // Replace with real GraphQL query to your envio indexer
+  // For now, randomly pick one
+  return Math.random() > 0.5 ? 'morpho' : 'aave';
+}
 
-  // Instantiate the Ledger Live API on component mount
-  useEffect(() => {
-    const llapi = new LedgerLiveApi(new WindowMessageTransport());
-    llapi.connect();
-    if (llapi) {
-      api.current = llapi;
-    }
-    // Cleanup the Ledger Live API on component unmount
-    return () => {
-      api.current = undefined;
-      void llapi.disconnect();
-    };
-  }, []);
+function App() {
+  const [page, setPage] = useState<'home' | 'platform'>("home");
+  const [platform, setPlatform] = useState<'morpho' | 'aave' | null>(null);
+  const [hasPosition, setHasPosition] = useState(false); // Simulate user position
 
-  // A very basic test call to request an account
-  const requestAccount = async () => {
-    if (!api.current) {
-      return;
-    }
-
-    const result = await api.current
-      .requestAccount()
-      .catch((error) => console.error({ error }));
-
-    console.log({ result });
+  const handleEnter = async () => {
+    const best = await fetchBestPlatform();
+    setPlatform(best);
+    // Simulate: check if user has a position (replace with real logic)
+    setHasPosition(false); // Always false for now
+    setPage('platform');
   };
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <button onClick={requestAccount}>Request account</button>
-      </header>
-    </div>
-  );
-};
+  const handleDeposit = () => {
+    // Here you would call the Morpho or Aave service to build the tx and send to Ledger
+    alert(`Déposer sur ${platform}`);
+    setHasPosition(true);
+  };
+
+  const handleSwitch = () => {
+    // Here you would call the withdraw+deposit logic
+    alert(`Switch de plateforme vers ${platform}`);
+  };
+
+  if (page === 'home') {
+    return <Home onEnter={handleEnter} />;
+  }
+
+  if (platform) {
+    return (
+      <PlatformPage
+        platform={platform}
+        hasPosition={hasPosition}
+        onDeposit={handleDeposit}
+        onSwitch={handleSwitch}
+      />
+    );
+  }
+
+  return null;
+}
 
 export default App;
