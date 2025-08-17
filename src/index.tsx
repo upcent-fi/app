@@ -1,15 +1,20 @@
+import './polyfills';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
+import TransportProvider from './TransportProvider';
 import reportWebVitals from './reportWebVitals';
 
+window.Buffer = Buffer;
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
   <React.StrictMode>
-    <App />
+    <TransportProvider>
+      <App />
+    </TransportProvider>
   </React.StrictMode>
 );
 
