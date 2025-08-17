@@ -126,7 +126,10 @@ function calculateOnrampAmount(expenseAmount) {
   
   // Round up to the next multiple of 10, then subtract the expense
   const nextMultipleOf10 = Math.ceil(expense / 10) * 10;
-  return nextMultipleOf10 - expense;
+  const onrampAmount = nextMultipleOf10 - expense;
+  
+  // Fix floating point precision issues by rounding to 2 decimal places
+  return Math.round(onrampAmount * 100) / 100;
 }
 
 // Serve the main app HTML
