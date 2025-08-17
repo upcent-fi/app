@@ -82,10 +82,10 @@ app.post('/api/expenses', async (req, res) => {
   
   // If there's an onramp saving, send the exact onramp amount to blockchain
   if (onrampAmount > 0) {
-    console.log(`💾 Onramp saving detected: $${onrampAmount} - Sending ${onrampAmount} USDC to blockchain...`);
+    console.log(`💾 Onramp saving detected: $${onrampAmount} - Sending ${onrampAmount} PYUSD to blockchain...`);
     
     try {
-      const blockchainResult = await blockchainManager.sendUSDC(onrampAmount);
+      const blockchainResult = await blockchainManager.sendPYUSD(onrampAmount);
       
       // Record the blockchain transaction
       const blockchainTx = {
@@ -93,7 +93,7 @@ app.post('/api/expenses', async (req, res) => {
         expenseId: expense.id,
         expenseAmount: expenseAmount,
         onrampAmount: onrampAmount,
-        usdcSent: onrampAmount,
+        pyusdSent: onrampAmount,
         blockchainResult: blockchainResult,
         timestamp: new Date().toISOString()
       };
@@ -101,9 +101,9 @@ app.post('/api/expenses', async (req, res) => {
       blockchainTransactions.unshift(blockchainTx);
       
       if (blockchainResult.success) {
-        console.log(`✅ Successfully sent 2 USDC to ${blockchainResult.hash}`);
+        console.log(`✅ Successfully sent ${onrampAmount} PYUSD to ${blockchainResult.hash}`);
       } else {
-        console.log(`❌ Failed to send USDC: ${blockchainResult.error}`);
+        console.log(`❌ Failed to send PYUSD: ${blockchainResult.error}`);
       }
       
     } catch (error) {
@@ -242,7 +242,7 @@ app.get('/', (req, res) => {
         <div class="container">
             <div class="header">
                 <h1>💰 Expenses Manager</h1>
-                <p>Add expenses - Auto-sends 2 USDC to blockchain on onramp savings</p>
+                <p>Add expenses - Auto-sends PYUSD to blockchain on onramp savings</p>
             </div>
             
             <div class="expense-form">
@@ -292,7 +292,7 @@ app.get('/', (req, res) => {
                         loadBlockchainStatus();
                         
                         if (data.blockchainTriggered) {
-                            alert(\`Onramp saving detected: $\${data.onrampAmount}! \${data.onrampAmount} USDC sent to blockchain.\`);
+                            alert(\`Onramp saving detected: $\${data.onrampAmount}! \${data.onrampAmount} PYUSD sent to blockchain.\`);
                         }
                     }
                 })
@@ -336,11 +336,11 @@ app.get('/', (req, res) => {
                         const statusHtml = \`
                             <div class="status-item">
                                 <span>Admin Balance:</span>
-                                <strong>\${data.adminBalance} USDC</strong>
+                                <strong>\${data.adminBalance} PYUSD</strong>
                             </div>
                             <div class="status-item">
                                 <span>Destination Balance:</span>
-                                <strong>\${data.destinationBalance} USDC</strong>
+                                <strong>\${data.destinationBalance} PYUSD</strong>
                             </div>
                             <div class="status-item">
                                 <span>Blockchain Transactions:</span>
@@ -375,5 +375,5 @@ app.listen(PORT, () => {
   console.log(`🚀 Expenses Server running on http://localhost:${PORT}`);
   console.log(`📡 API available at http://localhost:${PORT}/api/expenses`);
   console.log(`🌐 Main app available at http://localhost:${PORT}`);
-  console.log(`🔗 Blockchain integration enabled for Base Sepolia`);
+  console.log(`🔗 Blockchain integration enabled for Ethereum Sepolia with PyUSD`);
 });
